@@ -4,7 +4,7 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import api from "@/lib/api";
@@ -18,59 +18,67 @@ interface User {
   credits: number;
 }
 
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  photoURL?: string;
+  role?: string;
+}
+
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
-  register: (userData: any) => Promise<void>;
+  register: (userData: RegisterData) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+}
+
+function getStoredUser(): User | null {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem("crowdnest_user");
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored) as User;
+  } catch {
+    return null;
+  }
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(getStoredUser);
 
-  useEffect(() => {
-    // Check if user is logged in on page load
-    const storedUser = localStorage.getItem("crowdnest_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+  const register = useCallback(async (userData: RegisterData) => {
+    const data = await api.post<AuthResponse>("/auth/register", userData);
+    localStorage.setItem("crowdnest_token", data.token);
+    localStorage.setItem("crowdnest_user", JSON.stringify(data.user));
+    setUser(data.user);
   }, []);
 
-  const register = async (userData: any) => {
-    try {
-      const { data } = await api.post("/auth/register", userData);
-      localStorage.setItem("crowdnest_token", data.token);
-      localStorage.setItem("crowdnest_user", JSON.stringify(data));
-      setUser(data);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Registration failed");
-    }
-  };
+  const login = useCallback(async (email: string, password: string) => {
+    const data = await api.post<AuthResponse>("/auth/login", {
+      email,
+      password,
+    });
+    localStorage.setItem("crowdnest_token", data.token);
+    localStorage.setItem("crowdnest_user", JSON.stringify(data.user));
+    setUser(data.user);
+  }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const { data } = await api.post("/auth/login", { email, password });
-      localStorage.setItem("crowdnest_token", data.token);
-      localStorage.setItem("crowdnest_user", JSON.stringify(data));
-      setUser(data);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Login failed");
-    }
-  };
-
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("crowdnest_token");
     localStorage.removeItem("crowdnest_user");
     setUser(null);
-  };
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
