@@ -8,7 +8,7 @@ import { loginSchema, type LoginInput } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
@@ -54,18 +54,20 @@ export default function LoginPage() {
       await loginWithGoogle();
       router.push("/");
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : "Google login failed");
+      setServerError(
+        err instanceof Error ? err.message : "Google login failed",
+      );
     } finally {
       setGoogleLoading(false);
     }
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="auth-form-enter">
       {/* Logo */}
       <div className="mb-8 text-center">
         <Link href="/" className="inline-block text-3xl font-extrabold">
-          <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-amber-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
             CrowdNest
           </span>
         </Link>
@@ -75,7 +77,7 @@ export default function LoginPage() {
       </div>
 
       {/* Card */}
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl">
+      <div className="auth-card rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl">
         {/* Server error */}
         {serverError && (
           <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
@@ -133,7 +135,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20"
+                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
               />
             </div>
             {errors.email && (
@@ -150,15 +152,21 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20"
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-colors hover:text-slate-300"
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
               </button>
             </div>
             {errors.password && (
@@ -170,7 +178,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="group relative h-11 w-full overflow-hidden rounded-xl bg-gradient-to-r from-fuchsia-500 to-violet-500 text-white font-semibold shadow-lg shadow-fuchsia-500/25 transition-all hover:shadow-xl hover:shadow-fuchsia-500/30 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="auth-btn group relative h-12 w-full overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 via-fuchsia-500 to-cyan-500 text-white font-semibold shadow-lg shadow-fuchsia-500/25 transition-all hover:shadow-xl hover:shadow-fuchsia-500/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               {loading ? (
@@ -179,10 +187,13 @@ export default function LoginPage() {
                   Signing in...
                 </>
               ) : (
-                "Sign In"
+                <>
+                  Sign In
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </>
               )}
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-cyan-500 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500 opacity-0 transition-opacity group-hover:opacity-100" />
           </Button>
         </form>
 
@@ -191,7 +202,7 @@ export default function LoginPage() {
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="font-semibold text-fuchsia-400 transition-colors hover:text-fuchsia-300"
+            className="font-semibold text-amber-400 transition-colors hover:text-amber-300"
           >
             Create one
           </Link>

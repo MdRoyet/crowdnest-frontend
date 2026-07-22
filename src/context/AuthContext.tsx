@@ -30,7 +30,6 @@ interface RegisterData {
 }
 
 interface AuthResponse {
-  token: string;
   _id: string;
   name: string;
   email: string;
@@ -56,6 +55,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch current user from cookie on mount
   useEffect(() => {
+    // Skip request if no token cookie exists
+    const hasToken = document.cookie.includes("token=");
+    if (!hasToken) {
+      setLoading(false);
+      return;
+    }
+
     api
       .getSilent<User>("/auth/me")
       .then(setUser)
