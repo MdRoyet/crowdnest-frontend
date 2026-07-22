@@ -55,13 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch current user from cookie on mount
   useEffect(() => {
-    // Skip request if no token cookie exists
-    const hasToken = document.cookie.includes("token=");
-    if (!hasToken) {
-      setLoading(false);
-      return;
-    }
-
+    // Always try — httpOnly cookies aren't visible to document.cookie
     api
       .getSilent<User>("/auth/me")
       .then(setUser)
