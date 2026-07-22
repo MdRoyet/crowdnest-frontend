@@ -23,6 +23,11 @@ const pageTitles: Record<string, string> = {
   "explore-campaigns": "Explore Campaigns",
   "my-contributions": "My Contributions",
   "purchase-credit": "Purchase Credits",
+  "manage-users": "Manage Users",
+  "manage-campaigns": "Manage Campaigns",
+  "campaign-approvals": "Campaign Approvals",
+  "withdrawal-requests": "Withdrawal Requests",
+  reports: "Reports",
 };
 
 export default function DashboardNavbar() {

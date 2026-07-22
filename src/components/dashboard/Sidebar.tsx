@@ -22,6 +22,11 @@ import {
   Compass,
   CreditCard,
   Clock,
+  Shield,
+  UserCheck,
+  FileText,
+  AlertTriangle,
+  CheckCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -39,6 +44,15 @@ const supporterLinks = [
   { href: "/dashboard/supporter/my-contributions", label: "My Contributions", icon: Heart },
   { href: "/dashboard/supporter/purchase-credit", label: "Purchase Credits", icon: CreditCard },
   { href: "/dashboard/supporter/payment-history", label: "Payment History", icon: Clock },
+];
+
+const adminLinks = [
+  { href: "/dashboard/admin/home", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/admin/manage-users", label: "Manage Users", icon: Users },
+  { href: "/dashboard/admin/manage-campaigns", label: "Manage Campaigns", icon: Megaphone },
+  { href: "/dashboard/admin/campaign-approvals", label: "Campaign Approvals", icon: CheckCircle },
+  { href: "/dashboard/admin/withdrawal-requests", label: "Withdrawal Requests", icon: Wallet },
+  { href: "/dashboard/admin/reports", label: "Reports", icon: AlertTriangle },
 ];
 
 const secondaryLinks = [
@@ -95,7 +109,12 @@ export default function Sidebar() {
       {/* Primary nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <div className="space-y-1">
-          {(user?.role === "creator" ? creatorLinks : supporterLinks).map((link) => {
+          {(user?.role === "admin"
+            ? adminLinks
+            : user?.role === "creator"
+              ? creatorLinks
+              : supporterLinks
+          ).map((link) => {
             const Icon = link.icon;
             const active = pathname === link.href;
             return (
