@@ -11,6 +11,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import ImageUpload from "@/components/ui/image-upload";
 
 const categories = [
   "Technology",
@@ -221,17 +222,14 @@ export default function AddCampaignPage() {
           />
         </div>
 
-        {/* Image URL */}
+        {/* Campaign Image */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-            Campaign Image URL
+            Campaign Image
           </label>
-          <input
-            type="url"
-            placeholder="https://example.com/image.jpg"
+          <ImageUpload
             value={form.campaign_image_url}
-            onChange={(e) => update("campaign_image_url", e.target.value)}
-            className="h-11 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            onChange={(url) => update("campaign_image_url", url)}
           />
         </div>
 

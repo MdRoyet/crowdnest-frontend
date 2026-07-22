@@ -19,6 +19,7 @@ import {
   Palette,
   ArrowRight,
 } from "lucide-react";
+import ImageUpload from "@/components/ui/image-upload";
 
 export default function RegisterPage() {
   const [form, setForm] = useState<RegisterInput>({
@@ -215,24 +216,17 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Photo URL */}
+          {/* Profile Picture */}
           <div className="space-y-1.5">
             <Label className="text-sm text-slate-300">
               Profile Picture{" "}
               <span className="text-slate-600">(optional)</span>
             </Label>
-            <div className="relative">
-              <Palette className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
-              <Input
-                type="url"
-                placeholder="https://example.com/photo.jpg"
-                value={form.photoURL}
-                onChange={(e) =>
-                  setForm({ ...form, photoURL: e.target.value })
-                }
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
-              />
-            </div>
+            <ImageUpload
+              value={form.photoURL || ""}
+              onChange={(url) => setForm({ ...form, photoURL: url })}
+              dark
+            />
             {errors.photoURL && (
               <p className="text-xs text-red-400">{errors.photoURL}</p>
             )}

@@ -10,8 +10,9 @@ import {
   Loader2,
   Heart,
   DollarSign,
-  Calendar,
   Filter,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 interface Contribution {
@@ -25,11 +26,14 @@ interface Contribution {
   status: string;
 }
 
+const PAGE_SIZE = 10;
+
 export default function MyContributionsPage() {
   const { user } = useAuth();
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -44,9 +48,17 @@ export default function MyContributionsPage() {
     (c) => filter === "all" || c.status === filter,
   );
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const totalContributed = contributions
     .filter((c) => c.status === "approved")
     .reduce((sum, c) => sum + c.Contribution_amount, 0);
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [filter]);
 
   if (loading) {
     return (
@@ -110,71 +122,134 @@ export default function MyContributionsPage() {
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
+        <span className="ml-auto text-xs text-gray-400">
+          {filtered.length} contribution{filtered.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       {/* Table */}
       <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
+        {paginated.length === 0 ? (
           <div className="py-16 text-center text-gray-500">
             No contributions found.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase text-gray-500">
-                  <th className="px-6 py-3">Campaign</th>
-                  <th className="px-6 py-3">Creator</th>
-                  <th className="px-6 py-3">Amount</th>
-                  <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filtered.map((c) => (
-                  <tr key={c._id} className="hover:bg-gray-50/50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-sm font-bold text-indigo-600">
-                          {c.campaign_title[0]}
-                        </div>
-                        <span className="font-medium text-gray-900">
-                          {c.campaign_title}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">{c.creator_name}</td>
-                    <td className="px-6 py-4 font-semibold text-gray-900">
-                      ${c.Contribution_amount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">
-                      {new Date(c.current_date).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          c.status === "approved"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : c.status === "rejected"
-                              ? "bg-red-50 text-red-700"
-                              : "bg-amber-50 text-amber-700"
-                        }`}
-                      >
-                        {c.status === "approved" ? (
-                          <CheckCircle2 className="size-3" />
-                        ) : c.status === "rejected" ? (
-                          <XCircle className="size-3" />
-                        ) : (
-                          <Clock className="size-3" />
-                        )}
-                        {c.status}
-                      </span>
-                    </td>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase text-gray-500">
+                    <th className="px-6 py-3">Campaign</th>
+                    <th className="px-6 py-3">Creator</th>
+                    <th className="px-6 py-3">Amount</th>
+                    <th className="px-6 py-3">Date</th>
+                    <th className="px-6 py-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {paginated.map((c) => (
+                    <tr key={c._id} className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-sm font-bold text-indigo-600">
+                            {c.campaign_title[0]}
+                          </div>
+                          <span className="font-medium text-gray-900">
+                            {c.campaign_title}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">{c.creator_name}</td>
+                      <td className="px-6 py-4 font-semibold text-gray-900">
+                        ${c.Contribution_amount.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">
+                        {new Date(c.current_date).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            c.status === "approved"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : c.status === "rejected"
+                                ? "bg-red-50 text-red-700"
+                                : "bg-amber-50 text-amber-700"
+                          }`}
+                        >
+                          {c.status === "approved" ? (
+                            <CheckCircle2 className="size-3" />
+                          ) : c.status === "rejected" ? (
+                            <XCircle className="size-3" />
+                          ) : (
+                            <Clock className="size-3" />
+                          )}
+                          {c.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4">
+                <span className="text-xs text-gray-400">
+                  Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => {
+                      if (totalPages <= 7) return true;
+                      if (p === 1 || p === totalPages) return true;
+                      if (Math.abs(p - page) <= 1) return true;
+                      return false;
+                    })
+                    .reduce<(number | "ellipsis")[]>((acc, p, i, arr) => {
+                      if (i > 0 && p - (arr[i - 1] as number) > 1) {
+                        acc.push("ellipsis");
+                      }
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((item, i) =>
+                      item === "ellipsis" ? (
+                        <span key={`e${i}`} className="px-1 text-gray-300">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => setPage(item as number)}
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all ${
+                            page === item
+                              ? "bg-indigo-600 text-white"
+                              : "text-gray-500 hover:bg-gray-50"
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      ),
+                    )}
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -6,39 +6,48 @@ import api from "@/lib/api";
 import {
   Clock,
   CheckCircle2,
-  XCircle,
   Loader2,
   ArrowUpRight,
-  ArrowDownRight,
   Filter,
+  CreditCard,
+  DollarSign,
 } from "lucide-react";
 
-interface Contribution {
+interface Payment {
   _id: string;
-  campaign_title: string;
-  Contribution_amount: number;
-  current_date: string;
+  supporter_email: string;
+  credits_purchased: number;
+  amount_paid: number;
+  payment_date: string;
   status: string;
 }
 
 export default function SupporterPaymentHistoryPage() {
   const { user } = useAuth();
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [filter, setFilter] = useState<"all" | "completed" | "failed" | "refunded">("all");
 
   useEffect(() => {
     if (!user?.email) return;
     api
-      .get<Contribution[]>(`/contributions/supporter/${user.email}`)
-      .then(setContributions)
+      .get<Payment[]>(`/payments/supporter/${user.email}`)
+      .then(setPayments)
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [user?.email]);
 
-  const filtered = contributions.filter(
-    (c) => filter === "all" || c.status === filter,
+  const filtered = payments.filter(
+    (p) => filter === "all" || p.status === filter,
   );
+
+  const totalSpent = payments
+    .filter((p) => p.status === "completed")
+    .reduce((s, p) => s + p.amount_paid, 0);
+
+  const totalCredits = payments
+    .filter((p) => p.status === "completed")
+    .reduce((s, p) => s + p.credits_purchased, 0);
 
   if (loading) {
     return (
@@ -52,7 +61,7 @@ export default function SupporterPaymentHistoryPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Payment History</h1>
-        <p className="text-sm text-gray-500">View all your credit transactions.</p>
+        <p className="text-sm text-gray-500">View all your credit purchases.</p>
       </div>
 
       {/* Summary */}
@@ -60,14 +69,11 @@ export default function SupporterPaymentHistoryPage() {
         <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-              <ArrowUpRight className="size-5" />
+              <DollarSign className="size-5" />
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">
-                ${contributions
-                  .filter((c) => c.status === "approved")
-                  .reduce((s, c) => s + c.Contribution_amount, 0)
-                  .toLocaleString()}
+                ${totalSpent.toLocaleString()}
               </div>
               <div className="text-xs text-gray-500">Total Spent</div>
             </div>
@@ -75,33 +81,27 @@ export default function SupporterPaymentHistoryPage() {
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-              <Clock className="size-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <CreditCard className="size-5" />
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">
-                ${contributions
-                  .filter((c) => c.status === "pending")
-                  .reduce((s, c) => s + c.Contribution_amount, 0)
-                  .toLocaleString()}
+                {totalCredits.toLocaleString()}
               </div>
-              <div className="text-xs text-gray-500">Pending</div>
+              <div className="text-xs text-gray-500">Credits Purchased</div>
             </div>
           </div>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600">
-              <ArrowDownRight className="size-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <Clock className="size-5" />
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">
-                ${contributions
-                  .filter((c) => c.status === "rejected")
-                  .reduce((s, c) => s + c.Contribution_amount, 0)
-                  .toLocaleString()}
+                {payments.length}
               </div>
-              <div className="text-xs text-gray-500">Refunded</div>
+              <div className="text-xs text-gray-500">Transactions</div>
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function SupporterPaymentHistoryPage() {
       {/* Filters */}
       <div className="flex items-center gap-2">
         <Filter className="size-4 text-gray-400" />
-        {(["all", "approved", "pending", "rejected"] as const).map((f) => (
+        {(["all", "completed", "failed", "refunded"] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -129,64 +129,47 @@ export default function SupporterPaymentHistoryPage() {
       <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="py-16 text-center text-gray-500">
-            No transactions found.
+            No payment records found.
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
-            {filtered.map((c) => (
+            {filtered.map((p) => (
               <div
-                key={c._id}
+                key={p._id}
                 className="flex items-center justify-between px-6 py-4 hover:bg-gray-50/50"
               >
                 <div className="flex items-center gap-4">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                      c.status === "approved"
-                        ? "bg-emerald-100 text-emerald-600"
-                        : c.status === "rejected"
-                          ? "bg-red-100 text-red-600"
-                          : "bg-amber-100 text-amber-600"
-                    }`}
-                  >
-                    {c.status === "approved" ? (
-                      <ArrowUpRight className="size-4" />
-                    ) : c.status === "rejected" ? (
-                      <XCircle className="size-4" />
-                    ) : (
-                      <Clock className="size-4" />
-                    )}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                    <ArrowUpRight className="size-4" />
                   </div>
                   <div>
                     <div className="text-sm font-medium text-gray-900">
-                      {c.campaign_title}
+                      Purchased {p.credits_purchased.toLocaleString()} credits
                     </div>
                     <div className="text-xs text-gray-400">
-                      {new Date(c.current_date).toLocaleString()}
+                      {new Date(p.payment_date).toLocaleString()}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span
-                    className={`text-sm font-semibold ${
-                      c.status === "approved"
-                        ? "text-gray-900"
-                        : c.status === "rejected"
-                          ? "text-red-600"
-                          : "text-amber-600"
-                    }`}
-                  >
-                    {c.status === "rejected" ? "+" : "-"}${c.Contribution_amount.toLocaleString()}
+                  <span className="text-sm font-semibold text-gray-900">
+                    ${p.amount_paid}
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      c.status === "approved"
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      p.status === "completed"
                         ? "bg-emerald-50 text-emerald-700"
-                        : c.status === "rejected"
+                        : p.status === "refunded"
                           ? "bg-red-50 text-red-700"
-                          : "bg-amber-50 text-amber-700"
+                          : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {c.status === "approved" ? "spent" : c.status}
+                    {p.status === "completed" ? (
+                      <CheckCircle2 className="size-3" />
+                    ) : (
+                      <Clock className="size-3" />
+                    )}
+                    {p.status}
                   </span>
                 </div>
               </div>

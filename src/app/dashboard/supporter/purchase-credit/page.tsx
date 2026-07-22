@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import api from "@/lib/api";
 import {
   Wallet,
   CreditCard,
@@ -10,6 +11,7 @@ import {
   Zap,
   Crown,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 
 const plans = [
@@ -24,10 +26,10 @@ const plans = [
     popular: false,
   },
   {
-    name: "Popular",
-    credits: 500,
-    price: 45,
-    perCredit: "$0.09",
+    name: "Standard",
+    credits: 300,
+    price: 25,
+    perCredit: "$0.083",
     icon: Star,
     color: "border-indigo-500 ring-2 ring-indigo-500/20",
     badge: "Best Value",
@@ -35,12 +37,22 @@ const plans = [
   },
   {
     name: "Pro",
-    credits: 1000,
-    price: 80,
-    perCredit: "$0.08",
+    credits: 800,
+    price: 60,
+    perCredit: "$0.075",
     icon: Crown,
     color: "border-gray-200 hover:border-indigo-200",
     badge: "",
+    popular: false,
+  },
+  {
+    name: "Ultimate",
+    credits: 1500,
+    price: 110,
+    perCredit: "$0.073",
+    icon: Sparkles,
+    color: "border-gray-200 hover:border-indigo-200",
+    badge: "Most Credits",
     popular: false,
   },
 ];
@@ -50,14 +62,27 @@ export default function PurchaseCreditPage() {
   const [selected, setSelected] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handlePurchase = async () => {
     setLoading(true);
-    // Simulated purchase — in production this would call Stripe/payment API
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setLoading(false);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+    setError("");
+    setSuccess(false);
+
+    try {
+      await api.post("/payments", {
+        supporter_email: user?.email,
+        supporter_name: user?.name,
+        credits_purchased: plans[selected].credits,
+        amount_paid: plans[selected].price,
+      });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 4000);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Payment failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,7 +110,7 @@ export default function PurchaseCreditPage() {
       </div>
 
       {/* Plans */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         {plans.map((plan, i) => {
           const Icon = plan.icon;
           return (
@@ -124,6 +149,21 @@ export default function PurchaseCreditPage() {
         })}
       </div>
 
+      {/* Error */}
+      {error && (
+        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Success */}
+      {success && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <CheckCircle2 className="size-4" />
+          {plans[selected].credits} credits added to your account!
+        </div>
+      )}
+
       {/* Purchase button */}
       <button
         onClick={handlePurchase}
@@ -142,13 +182,6 @@ export default function PurchaseCreditPage() {
           </>
         )}
       </button>
-
-      {success && (
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          <CheckCircle2 className="size-4" />
-          Credits purchased successfully!
-        </div>
-      )}
 
       {/* Info */}
       <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
