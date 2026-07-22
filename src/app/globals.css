@@ -230,3 +230,330 @@
 .auth-orb-3 {
   animation: authOrb3 8s ease-in-out infinite;
 }
+
+/* ===== AUTH PAGE — Split-Screen Redesign ===== */
+
+/* Animated mesh gradient background (left panel) */
+.mesh-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, #f43f5e 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 80% 30%, #8b5cf6 0%, transparent 55%),
+    radial-gradient(ellipse 60% 80% at 50% 80%, #06b6d4 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 10% 90%, #f59e0b 0%, transparent 50%),
+    linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  background-size: 200% 200%;
+  animation: meshShift 12s ease-in-out infinite;
+}
+
+.mesh-overlay {
+  background:
+    radial-gradient(ellipse 50% 40% at 70% 60%, rgba(244, 63, 94, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 50% at 30% 50%, rgba(139, 92, 246, 0.25) 0%, transparent 50%);
+  animation: meshOverlay 8s ease-in-out infinite alternate;
+}
+
+@keyframes meshShift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+@keyframes meshOverlay {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(1px);
+}
+
+.particle-1 {
+  width: 6px; height: 6px;
+  background: rgba(251, 191, 36, 0.7);
+  top: 15%; left: 20%;
+  animation: floatUp 6s ease-in-out infinite;
+}
+
+.particle-2 {
+  width: 4px; height: 4px;
+  background: rgba(244, 114, 182, 0.6);
+  top: 60%; left: 70%;
+  animation: floatUp 8s ease-in-out infinite 1s;
+}
+
+.particle-3 {
+  width: 5px; height: 5px;
+  background: rgba(34, 211, 238, 0.7);
+  top: 40%; left: 45%;
+  animation: floatUp 7s ease-in-out infinite 2s;
+}
+
+.particle-4 {
+  width: 3px; height: 3px;
+  background: rgba(251, 191, 36, 0.5);
+  top: 80%; left: 30%;
+  animation: floatUp 9s ease-in-out infinite 0.5s;
+}
+
+.particle-5 {
+  width: 5px; height: 5px;
+  background: rgba(168, 85, 247, 0.6);
+  top: 25%; left: 80%;
+  animation: floatUp 7.5s ease-in-out infinite 3s;
+}
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+  25% { transform: translateY(-20px) translateX(10px) scale(1.2); opacity: 1; }
+  50% { transform: translateY(-35px) translateX(-5px) scale(0.9); opacity: 0.7; }
+  75% { transform: translateY(-15px) translateX(8px) scale(1.1); opacity: 0.9; }
+}
+
+/* Auth form entrance */
+.auth-form-enter {
+  animation: formEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes formEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Auth card glow pulse */
+.auth-card {
+  animation: cardGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes cardGlow {
+  0% {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.08), 0 25px 50px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(244, 63, 94, 0.12), 0 25px 50px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Auth button shimmer */
+.auth-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.6s ease;
+}
+
+.auth-btn:hover::before {
+  left: 100%;
+}
+
+/* Mobile testimonial card (visible on small screens) */
+@media (max-width: 1023px) {
+  .mobile-testimonial {
+    display: block;
+  }
+}
+
+/* ===== Hero Section Animations ===== */
+
+.hero-orb {
+  animation: heroOrb 15s ease-in-out infinite;
+}
+
+.hero-orb-2 {
+  animation: heroOrb2 12s ease-in-out infinite;
+}
+
+@keyframes heroOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -40px) scale(1.1); }
+  66% { transform: translate(-30px, 30px) scale(0.95); }
+}
+
+@keyframes heroOrb2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(1.15); }
+  66% { transform: translate(35px, -25px) scale(0.9); }
+}
+
+/* Hero slide entrance */
+.hero-tag {
+  animation: heroSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-title {
+  animation: heroSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
+}
+
+.hero-desc {
+  animation: heroSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
+}
+
+.hero-ctas {
+  animation: heroSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
+}
+
+.hero-stats {
+  animation: heroSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+  opacity: 0;
+}
+
+@keyframes heroSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* ===== Hero Slide Backgrounds (pure CSS, no external assets) ===== */
+
+.hero-bg-real-estate {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(245,158,11,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 80% 60%, rgba(249,115,22,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 90%, rgba(234,88,12,0.25) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 40% at 60% 20%, rgba(251,191,36,0.15) 0%, transparent 40%),
+    linear-gradient(160deg, #0c0a06 0%, #1c1008 40%, #0f172a 100%);
+  animation: meshDrift 15s ease-in-out infinite alternate;
+  background-size: 200% 200%;
+}
+
+.hero-bg-tech {
+  background:
+    radial-gradient(ellipse 80% 60% at 25% 35%, rgba(6,182,212,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 75% 65%, rgba(59,130,246,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 85%, rgba(14,165,233,0.25) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 40% at 15% 70%, rgba(34,211,238,0.15) 0%, transparent 40%),
+    linear-gradient(160deg, #040d14 0%, #041e2e 40%, #0f172a 100%);
+  animation: meshDrift 15s ease-in-out infinite alternate;
+  background-size: 200% 200%;
+}
+
+.hero-bg-creative {
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 45%, rgba(232,121,249,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 70% 55%, rgba(236,72,153,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 85%, rgba(217,70,239,0.25) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 40% at 80% 30%, rgba(244,114,182,0.15) 0%, transparent 40%),
+    linear-gradient(160deg, #0a0412 0%, #1a0a24 40%, #0f172a 100%);
+  animation: meshDrift 15s ease-in-out infinite alternate;
+  background-size: 200% 200%;
+}
+
+.hero-bg-community {
+  background:
+    radial-gradient(ellipse 80% 60% at 25% 40%, rgba(52,211,153,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 75% 60%, rgba(20,184,166,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 85%, rgba(16,185,129,0.25) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 40% at 85% 30%, rgba(52,211,153,0.15) 0%, transparent 40%),
+    linear-gradient(160deg, #020d08 0%, #041a12 40%, #0f172a 100%);
+  animation: meshDrift 15s ease-in-out infinite alternate;
+  background-size: 200% 200%;
+}
+
+.hero-bg-gaming {
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 40%, rgba(167,139,250,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 70% 60%, rgba(147,51,234,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 85%, rgba(139,92,246,0.25) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 40% at 15% 70%, rgba(192,132,252,0.15) 0%, transparent 40%),
+    linear-gradient(160deg, #060412 0%, #130a24 40%, #0f172a 100%);
+  animation: meshDrift 15s ease-in-out infinite alternate;
+  background-size: 200% 200%;
+}
+
+@keyframes meshDrift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 100%; }
+}
+
+/* ===== Showcase Section Mesh Backgrounds ===== */
+
+.mesh-bg-amber {
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(245,158,11,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 70% 60%, rgba(249,115,22,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 80%, rgba(234,88,12,0.2) 0%, transparent 45%),
+    linear-gradient(160deg, #0c0a06 0%, #1c1008 50%, #0f172a 100%);
+  animation: showcasePulse 8s ease-in-out infinite alternate;
+}
+
+.mesh-bg-cyan {
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(6,182,212,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 70% 60%, rgba(59,130,246,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 80%, rgba(14,165,233,0.2) 0%, transparent 45%),
+    linear-gradient(160deg, #040d14 0%, #041e2e 50%, #0f172a 100%);
+  animation: showcasePulse 8s ease-in-out infinite alternate;
+}
+
+.mesh-bg-rose {
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(244,63,94,0.3) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 70% 60%, rgba(236,72,153,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 80%, rgba(217,70,239,0.2) 0%, transparent 45%),
+    linear-gradient(160deg, #0a0412 0%, #1a0a24 50%, #0f172a 100%);
+  animation: showcasePulse 8s ease-in-out infinite alternate;
+}
+
+.mesh-bg-violet {
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(167,139,250,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 70% 60%, rgba(147,51,234,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 80%, rgba(139,92,246,0.2) 0%, transparent 45%),
+    linear-gradient(160deg, #060412 0%, #130a24 50%, #0f172a 100%);
+  animation: showcasePulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes showcasePulse {
+  0% { opacity: 0.8; filter: brightness(0.9); }
+  100% { opacity: 1; filter: brightness(1.1); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mesh-bg,
+  .mesh-overlay,
+  .particle,
+  .auth-form-enter,
+  .auth-card,
+  .auth-btn::before,
+  .hero-orb,
+  .hero-orb-2,
+  .hero-tag,
+  .hero-title,
+  .hero-desc,
+  .hero-ctas,
+  .hero-stats {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}

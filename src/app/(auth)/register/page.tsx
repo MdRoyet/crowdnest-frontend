@@ -17,6 +17,7 @@ import {
   Loader2,
   Sparkles,
   Palette,
+  ArrowRight,
 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -59,7 +60,9 @@ export default function RegisterPage() {
       });
       router.push("/login");
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : "Registration failed");
+      setServerError(
+        err instanceof Error ? err.message : "Registration failed",
+      );
     } finally {
       setLoading(false);
     }
@@ -72,18 +75,20 @@ export default function RegisterPage() {
       await loginWithGoogle();
       router.push("/");
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : "Google signup failed");
+      setServerError(
+        err instanceof Error ? err.message : "Google signup failed",
+      );
     } finally {
       setGoogleLoading(false);
     }
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="auth-form-enter">
       {/* Logo */}
       <div className="mb-8 text-center">
         <Link href="/" className="inline-block text-3xl font-extrabold">
-          <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-amber-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
             CrowdNest
           </span>
         </Link>
@@ -93,7 +98,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Card */}
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl">
+      <div className="auth-card rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl">
         {/* Server error */}
         {serverError && (
           <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
@@ -135,7 +140,9 @@ export default function RegisterPage() {
         {/* Divider */}
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-white/10" />
-          <span className="text-xs text-slate-500">or register with email</span>
+          <span className="text-xs text-slate-500">
+            or register with email
+          </span>
           <div className="h-px flex-1 bg-white/10" />
         </div>
 
@@ -151,7 +158,7 @@ export default function RegisterPage() {
                 placeholder="John Doe"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20"
+                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
               />
             </div>
             {errors.name && (
@@ -169,7 +176,7 @@ export default function RegisterPage() {
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20"
+                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
               />
             </div>
             {errors.email && (
@@ -186,8 +193,10 @@ export default function RegisterPage() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Min 6 chars, 1 uppercase, 1 number"
                 value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20"
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
               />
               <button
                 type="button"
@@ -218,8 +227,10 @@ export default function RegisterPage() {
                 type="url"
                 placeholder="https://example.com/photo.jpg"
                 value={form.photoURL}
-                onChange={(e) => setForm({ ...form, photoURL: e.target.value })}
-                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20"
+                onChange={(e) =>
+                  setForm({ ...form, photoURL: e.target.value })
+                }
+                className="h-11 rounded-xl border-white/10 bg-white/5 pl-10 text-white placeholder-slate-500 focus:border-fuchsia-500/50 focus:ring-fuchsia-500/20"
               />
             </div>
             {errors.photoURL && (
@@ -236,14 +247,14 @@ export default function RegisterPage() {
                 onClick={() => setForm({ ...form, role: "supporter" })}
                 className={`group relative rounded-2xl border p-4 text-left transition-all ${
                   form.role === "supporter"
-                    ? "border-cyan-500/50 bg-cyan-500/10 shadow-lg shadow-cyan-500/10"
+                    ? "border-amber-500/50 bg-amber-500/10 shadow-lg shadow-amber-500/10"
                     : "border-white/10 bg-white/5 hover:border-white/20"
                 }`}
               >
                 <Sparkles
                   className={`mb-2 size-5 ${
                     form.role === "supporter"
-                      ? "text-cyan-400"
+                      ? "text-amber-400"
                       : "text-slate-500"
                   }`}
                 />
@@ -282,7 +293,7 @@ export default function RegisterPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="group relative h-11 w-full overflow-hidden rounded-xl bg-gradient-to-r from-fuchsia-500 to-violet-500 text-white font-semibold shadow-lg shadow-fuchsia-500/25 transition-all hover:shadow-xl hover:shadow-fuchsia-500/30 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="auth-btn group relative h-12 w-full overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 via-fuchsia-500 to-cyan-500 text-white font-semibold shadow-lg shadow-fuchsia-500/25 transition-all hover:shadow-xl hover:shadow-fuchsia-500/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               {loading ? (
@@ -291,10 +302,13 @@ export default function RegisterPage() {
                   Creating account...
                 </>
               ) : (
-                "Create Account"
+                <>
+                  Create Account
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </>
               )}
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-cyan-500 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500 opacity-0 transition-opacity group-hover:opacity-100" />
           </Button>
         </form>
 
@@ -303,7 +317,7 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-semibold text-fuchsia-400 transition-colors hover:text-fuchsia-300"
+            className="font-semibold text-amber-400 transition-colors hover:text-amber-300"
           >
             Sign in
           </Link>
