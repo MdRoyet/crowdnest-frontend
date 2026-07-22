@@ -12,8 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const GITHUB_REPO = "https://github.com/MdRoyet/crowdnest-frontend";
 
@@ -112,8 +113,12 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const pathname = usePathname();
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
   useEffect(() => {
+    setHydrated(true);
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -128,9 +133,13 @@ export default function Navbar() {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 shadow-lg shadow-black/5 backdrop-blur-xl border-b border-white/20"
-          : "bg-white/60 backdrop-blur-md border-b border-transparent"
+        isAuthPage
+          ? scrolled
+            ? "bg-slate-950/80 shadow-lg shadow-black/20 backdrop-blur-xl border-b border-white/10"
+            : "bg-transparent backdrop-blur-sm border-b border-transparent"
+          : scrolled
+            ? "bg-white/80 shadow-lg shadow-black/5 backdrop-blur-xl border-b border-white/20"
+            : "bg-white/60 backdrop-blur-md border-b border-transparent"
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -145,19 +154,27 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full text-slate-600 hover:text-violet-600 hover:bg-violet-50"
+              className={`rounded-full ${
+                isAuthPage
+                  ? "text-slate-300 hover:text-violet-400 hover:bg-white/10"
+                  : "text-slate-600 hover:text-violet-600 hover:bg-violet-50"
+              }`}
             >
               Explore Campaigns
             </Button>
           </Link>
 
-          {user ? (
+          {hydrated && user ? (
             <>
               <Link href={dashboardHref}>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="rounded-full text-slate-600 hover:text-fuchsia-600 hover:bg-fuchsia-50"
+                  className={`rounded-full ${
+                    isAuthPage
+                      ? "text-slate-300 hover:text-fuchsia-400 hover:bg-white/10"
+                      : "text-slate-600 hover:text-fuchsia-600 hover:bg-fuchsia-50"
+                  }`}
                 >
                   <LayoutDashboard className="size-4" />
                   Dashboard
@@ -165,8 +182,14 @@ export default function Navbar() {
               </Link>
 
               {/* Credits pill */}
-              <span className="relative flex items-center gap-1.5 rounded-full border border-cyan-200 bg-gradient-to-r from-cyan-50 to-violet-50 px-3 py-1 text-xs font-semibold text-cyan-700">
-                <span className="inline-block size-1.5 animate-pulse rounded-full bg-cyan-400" />
+              <span
+                className={`relative flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                  isAuthPage
+                    ? "border border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
+                    : "border border-cyan-200 bg-gradient-to-r from-cyan-50 to-violet-50 text-cyan-700"
+                }`}
+              >
+                <span className={`inline-block size-1.5 animate-pulse rounded-full ${isAuthPage ? "bg-cyan-400" : "bg-cyan-400"}`} />
                 {user.credits} Credits
               </span>
 
@@ -191,9 +214,20 @@ export default function Navbar() {
                       <span className="text-xs text-muted-foreground">
                         {user.email}
                       </span>
-                      <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-gradient-to-r from-cyan-50 to-violet-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
-                        {user.credits} Credits
-                      </span>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          user.role === "admin"
+                            ? "bg-red-50 text-red-600"
+                            : user.role === "creator"
+                              ? "bg-fuchsia-50 text-fuchsia-600"
+                              : "bg-cyan-50 text-cyan-600"
+                        }`}>
+                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        </span>
+                        <span className="inline-flex w-fit items-center gap-1 rounded-full bg-gradient-to-r from-cyan-50 to-violet-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
+                          {user.credits} Credits
+                        </span>
+                      </div>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -204,14 +238,6 @@ export default function Navbar() {
                   >
                     <LayoutDashboard className="size-4" />
                     Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    render={
-                      <Link href="/dashboard/supporter/payment-history" onClick={() => setMobileOpen(false)} />
-                    }
-                  >
-                    <User className="size-4" />
-                    Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} variant="destructive">
@@ -227,7 +253,11 @@ export default function Navbar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="rounded-full text-slate-600 hover:text-violet-600 hover:bg-violet-50"
+                  className={`rounded-full ${
+                    isAuthPage
+                      ? "text-slate-300 hover:text-violet-400 hover:bg-white/10"
+                      : "text-slate-600 hover:text-violet-600 hover:bg-violet-50"
+                  }`}
                 >
                   Login
                 </Button>
@@ -247,18 +277,27 @@ export default function Navbar() {
             <Button
               variant="outline"
               size="sm"
-              className="ml-1 rounded-full border-slate-200 text-slate-500 hover:border-violet-300 hover:text-violet-600 hover:bg-violet-50"
+              className={`rounded-full ${
+                isAuthPage
+                  ? "border-white/20 text-slate-400 hover:border-violet-400/50 hover:text-violet-400 hover:bg-white/10"
+                  : "border-slate-200 text-slate-500 hover:border-violet-300 hover:text-violet-600 hover:bg-violet-50"
+              }`}
             >
               <svg className="size-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
+              Join as Developer
             </Button>
           </a>
         </div>
 
         {/* Mobile toggle */}
         <button
-          className="relative z-50 rounded-xl p-2 text-slate-500 transition-colors hover:bg-violet-50 hover:text-violet-600 md:hidden"
+          className={`relative z-50 rounded-xl p-2 transition-colors md:hidden ${
+            isAuthPage
+              ? "text-slate-400 hover:bg-white/10 hover:text-violet-400"
+              : "text-slate-500 hover:bg-violet-50 hover:text-violet-600"
+          }`}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -289,27 +328,43 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="absolute inset-x-0 top-full z-40 border-t border-white/20 bg-white/95 px-4 py-4 shadow-xl backdrop-blur-xl md:hidden">
+        <div className={`absolute inset-x-0 top-full z-40 border-t px-4 py-4 shadow-xl backdrop-blur-xl md:hidden ${
+          isAuthPage
+            ? "border-white/10 bg-slate-950/95"
+            : "border-white/20 bg-white/95"
+        }`}>
           <div className="space-y-1">
             <Link
               href="/explore-campaigns"
               onClick={() => setMobileOpen(false)}
-              className="block rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-violet-50 hover:text-violet-600"
+              className={`block rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                isAuthPage
+                  ? "text-slate-300 hover:bg-white/10 hover:text-violet-400"
+                  : "text-slate-600 hover:bg-violet-50 hover:text-violet-600"
+              }`}
             >
               Explore Campaigns
             </Link>
 
-            {user ? (
+            {hydrated && user ? (
               <>
                 <Link
                   href={dashboardHref}
                   onClick={() => setMobileOpen(false)}
-                  className="block rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-fuchsia-50 hover:text-fuchsia-600"
+                  className={`block rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                    isAuthPage
+                      ? "text-slate-300 hover:bg-white/10 hover:text-fuchsia-400"
+                      : "text-slate-600 hover:bg-fuchsia-50 hover:text-fuchsia-600"
+                  }`}
                 >
                   Dashboard
                 </Link>
 
-                <div className="mx-4 my-2 flex items-center gap-3 rounded-xl bg-gradient-to-r from-cyan-50 to-violet-50 px-4 py-3">
+                <div className={`mx-4 my-2 flex items-center gap-3 rounded-xl px-4 py-3 ${
+                  isAuthPage
+                    ? "bg-white/5 border border-white/10"
+                    : "bg-gradient-to-r from-cyan-50 to-violet-50"
+                }`}>
                   <Avatar size="sm">
                     <AvatarImage src={user.photoURL} alt={user.name} />
                     <AvatarFallback className="bg-gradient-to-br from-fuchsia-400 to-violet-500 text-white text-xs font-bold">
@@ -320,14 +375,25 @@ export default function Navbar() {
                     <div className="truncate text-sm font-semibold">
                       {user.name}
                     </div>
-                    <div className="truncate text-xs text-muted-foreground">
-                      {user.email}
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={`inline-flex w-fit items-center rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${
+                        user.role === "admin"
+                          ? "bg-red-100 text-red-600"
+                          : user.role === "creator"
+                            ? "bg-fuchsia-100 text-fuchsia-600"
+                            : "bg-cyan-100 text-cyan-600"
+                      }`}>
+                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                      </span>
+                      <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${
+                        isAuthPage
+                          ? "bg-white/10 text-cyan-300"
+                          : "bg-white text-cyan-600 shadow-sm"
+                      }`}>
+                        {user.credits} Credits
+                      </span>
                     </div>
                   </div>
-                  <span className="flex shrink-0 items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-cyan-600 shadow-sm">
-                    <span className="inline-block size-1 rounded-full bg-cyan-400" />
-                    {user.credits}
-                  </span>
                 </div>
 
                 <button
@@ -335,7 +401,11 @@ export default function Navbar() {
                     logout();
                     setMobileOpen(false);
                   }}
-                  className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50"
+                  className={`flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                    isAuthPage
+                      ? "text-red-400 hover:bg-red-500/10"
+                      : "text-red-500 hover:bg-red-50"
+                  }`}
                 >
                   <LogOut className="size-4" />
                   Logout
@@ -346,7 +416,9 @@ export default function Navbar() {
                 <Link href="/login" onClick={() => setMobileOpen(false)} className="flex-1">
                   <Button
                     variant="ghost"
-                    className="w-full rounded-xl text-slate-600"
+                    className={`w-full rounded-xl ${
+                      isAuthPage ? "text-slate-300" : "text-slate-600"
+                    }`}
                   >
                     Login
                   </Button>
@@ -363,7 +435,11 @@ export default function Navbar() {
               href={GITHUB_REPO}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                isAuthPage
+                  ? "text-slate-400 hover:bg-white/10 hover:text-slate-200"
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+              }`}
             >
               <svg className="size-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />

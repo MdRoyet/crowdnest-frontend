@@ -7,17 +7,17 @@ const testimonials = [
   {
     name: "Sarah J.",
     quote: "CrowdNest helped me fund my dream project in just 3 days!",
-    photo: "https://i.ibb.co/2k5z4jN/default-avatar.png",
+    photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=crowdnest",
   },
   {
     name: "Mike T.",
     quote: "The credit system makes supporting creators so easy.",
-    photo: "https://i.ibb.co/2k5z4jN/default-avatar.png",
+    photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=crowdnest",
   },
   {
     name: "Emma L.",
     quote: "A fantastic platform with a great community.",
-    photo: "https://i.ibb.co/2k5z4jN/default-avatar.png",
+    photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=crowdnest",
   },
 ];
 

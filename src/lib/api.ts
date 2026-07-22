@@ -9,14 +9,11 @@ async function request<T>(
     ...(options.headers as Record<string, string>),
   };
 
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("crowdnest_token");
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  }
-
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  const res = await fetch(`${API_URL}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
