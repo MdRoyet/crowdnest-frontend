@@ -57,9 +57,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Fetch current user from cookie on mount
   useEffect(() => {
     api
-      .get<User>("/auth/me")
+      .getSilent<User>("/auth/me")
       .then(setUser)
-      .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
 

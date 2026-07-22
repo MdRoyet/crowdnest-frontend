@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -208,28 +209,30 @@ export default function Navbar() {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-sm font-semibold">{user.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {user.email}
-                      </span>
-                      <div className="mt-1 flex items-center gap-1.5">
-                        <span className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                          user.role === "admin"
-                            ? "bg-red-50 text-red-600"
-                            : user.role === "creator"
-                              ? "bg-fuchsia-50 text-fuchsia-600"
-                              : "bg-cyan-50 text-cyan-600"
-                        }`}>
-                          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-semibold">{user.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {user.email}
                         </span>
-                        <span className="inline-flex w-fit items-center gap-1 rounded-full bg-gradient-to-r from-cyan-50 to-violet-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
-                          {user.credits} Credits
-                        </span>
+                        <div className="mt-1 flex items-center gap-1.5">
+                          <span className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                            user.role === "admin"
+                              ? "bg-red-50 text-red-600"
+                              : user.role === "creator"
+                                ? "bg-fuchsia-50 text-fuchsia-600"
+                                : "bg-cyan-50 text-cyan-600"
+                          }`}>
+                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                          </span>
+                          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-gradient-to-r from-cyan-50 to-violet-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
+                            {user.credits} Credits
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </DropdownMenuLabel>
+                    </DropdownMenuLabel>
+                  </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     render={

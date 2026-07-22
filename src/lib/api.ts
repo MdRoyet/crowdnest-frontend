@@ -25,8 +25,21 @@ async function request<T>(
   return res.json();
 }
 
+async function requestSilent<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 const api = {
   get: <T>(path: string) => request<T>(path),
+  getSilent: <T>(path: string) => requestSilent<T>(path),
   post: <T>(path: string, data: unknown) =>
     request<T>(path, { method: "POST", body: JSON.stringify(data) }),
   put: <T>(path: string, data: unknown) =>
