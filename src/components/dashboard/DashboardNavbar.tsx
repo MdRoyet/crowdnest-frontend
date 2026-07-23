@@ -84,14 +84,14 @@ export default function DashboardNavbar() {
       );
       setNotifications(data);
     } catch {
-      // silent
+      // silent — backend may be down
     }
   }, [user?.email]);
 
   useEffect(() => {
     fetchNotifications();
-    // Poll every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
+    // Poll every 60 seconds (only if backend is reachable)
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
